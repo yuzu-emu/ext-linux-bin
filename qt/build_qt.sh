@@ -17,18 +17,9 @@ NUM_CORES=$(nproc)
 mkdir build || true
 cd build
 mkdir out || true
-../configure -opensource -confirm-license -prefix $(pwd)/out
+../configure -opensource -confirm-license -prefix $(pwd)/out -xcb -xcb-xlib -qpa xcb -xkbcommon -gtk -icu
 make -j${NUM_CORES} NINJAJOBS=-j${NUM_CORES}
 make -j${NUM_CORES} install DESTDIR=out
 
-
-mkdir -pv ${BASE_NAME}/
-mv -v build/out/* ${BASE_NAME}/
-cp -v ${THIS} ${BASE_NAME}/
-
-tar cv ${BASE_NAME} | xz -c > ${ARCHIVE_NAME}
-
-if [ -e ${ARCHIVE_NAME} ]; then
-    echo "hidapi package can be found at $(readlink -e ${ARCHIVE_NAME})"
-fi
+# Don't forget to include ICU libraries, then run `patchelf --set-rpath '$ORIGIN/../lib' [library]` on all of them
 
